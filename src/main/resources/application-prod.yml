@@ -2,7 +2,7 @@ spring:
   application:
     name: pressuremonitor
   datasource:
-    url: ${PRESSURE_MONITOR_DB_URL}?autoReconnect=true
+    url: ${PRESSURE_MONITOR_DB_URL}
     username: ${PRESSURE_MONITOR_DB_USERNAME}
     password: ${PRESSURE_MONITOR_DB_PASSWORD}
     hikari:
