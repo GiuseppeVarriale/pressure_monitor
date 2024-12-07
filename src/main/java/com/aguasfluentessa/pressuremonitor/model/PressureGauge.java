@@ -1,6 +1,7 @@
 package com.aguasfluentessa.pressuremonitor.model;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.CurrentTimestamp;
@@ -44,7 +45,7 @@ public class PressureGauge {
 
     public PressureGauge(Long id, String systemId,
             String gaugeUniqueIdentificator,
-            Double lat, 
+            Double lat,
             Double lon,
             Boolean active,
             LocalDateTime createdAt,
@@ -121,6 +122,28 @@ public class PressureGauge {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        PressureGauge that = (PressureGauge) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(systemId, that.systemId) &&
+                Objects.equals(gaugeUniqueIdentificator, that.gaugeUniqueIdentificator) &&
+                Objects.equals(lat, that.lat) &&
+                Objects.equals(lon, that.lon) &&
+                Objects.equals(active, that.active) &&
+                Objects.equals(createdAt, that.createdAt) &&
+                Objects.equals(updatedAt, that.updatedAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, systemId, gaugeUniqueIdentificator, lat, lon, active, createdAt, updatedAt);
     }
 
     @Override
