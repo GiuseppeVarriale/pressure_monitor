@@ -13,7 +13,7 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "pressure_gauge")
+@Table(name = "pressure_gauges")
 public class PressureGauge {
 
     @Id
@@ -24,16 +24,23 @@ public class PressureGauge {
     @Column(unique = true)
     private String systemId;
 
-    @Column(unique = true)
+    @Column(unique = true, updatable = false)
     private String gaugeUniqueIdentificator;
 
+    @Column(nullable = false)
     private Double lat;
+    
+    @Column(nullable = false)
     private Double lon;
+    
+    @Column(nullable = false)
     private Boolean active;
 
     @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "updated_at")
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
