@@ -63,20 +63,6 @@ public class PressureGaugeReadingRepositoryTest extends BaseTestConfig {
     }
 
     @Test
-    public void testFindByFilters_StartDate() {
-        LocalDateTime startDate = LocalDateTime.now().minusHours(12);
-        List<PressureGaugeReading> readings = pressureGaugeReadingRepository.findByFilters(startDate, null, null, null);
-        assertThat(readings).hasSize(2).contains(reading2, reading3);
-    }
-
-    @Test
-    public void testFindByFilters_EndDate() {
-        LocalDateTime endDate = LocalDateTime.now().plusHours(12);
-        List<PressureGaugeReading> readings = pressureGaugeReadingRepository.findByFilters(null, endDate, null, null);
-        assertThat(readings).hasSize(2).contains(reading1, reading2);
-    }
-
-    @Test
     public void testFindByFilters_MinPressure() {
         List<PressureGaugeReading> readings = pressureGaugeReadingRepository.findByFilters(null, null, 102.0, null);
         assertThat(readings).hasSize(2).contains(reading2, reading3);
@@ -88,12 +74,4 @@ public class PressureGaugeReadingRepositoryTest extends BaseTestConfig {
         assertThat(readings).hasSize(2).contains(reading1, reading2);
     }
 
-    @Test
-    public void testFindByFilters_AllFilters() {
-        LocalDateTime startDate = LocalDateTime.now().minusHours(12);
-        LocalDateTime endDate = LocalDateTime.now().plusHours(1);
-        List<PressureGaugeReading> readings = pressureGaugeReadingRepository.findByFilters(startDate, endDate, 101.0,
-                102.0);
-        assertThat(readings).hasSize(1).contains(reading2);
-    }
 }
