@@ -24,7 +24,7 @@ public class PressureGaugeReadingTest {
     @Test
     public void testPressureGaugeReadingFullConstructor() {
         LocalDateTime now = LocalDateTime.now();
-        PressureGaugeReading reading = new PressureGaugeReading(1L, "unique123", 101.5, "system123", 12.34, 56.78, now);
+        PressureGaugeReading reading = new PressureGaugeReading(1L, "unique123", 101.5, "system123", 12.34, 56.78, now, now);
 
         assertEquals(1L, reading.getId());
         assertEquals("unique123", reading.getGaugeUniqueIdentificator());
@@ -54,9 +54,9 @@ public class PressureGaugeReadingTest {
     @Test
     public void testEqualsAndHashCode() {
         LocalDateTime now = LocalDateTime.now();
-        PressureGaugeReading reading1 = new PressureGaugeReading(1L, "unique123", 101.5, "system123", 12.34, 56.78, now);
-        PressureGaugeReading reading2 = new PressureGaugeReading(1L, "unique123", 101.5, "system123", 12.34, 56.78, now);
-        PressureGaugeReading reading3 = new PressureGaugeReading(2L, "unique456", 102.5, "system456", 23.45, 67.89, now);
+        PressureGaugeReading reading1 = new PressureGaugeReading(1L, "unique123", 101.5, "system123", 12.34, 56.78, now, now);
+        PressureGaugeReading reading2 = new PressureGaugeReading(1L, "unique123", 101.5, "system123", 12.34, 56.78, now, now);
+        PressureGaugeReading reading3 = new PressureGaugeReading(2L, "unique456", 102.5, "system456", 23.45, 67.89, now, now);
 
         assertEquals(reading1, reading2);
         assertNotEquals(reading1, reading3);
@@ -66,8 +66,9 @@ public class PressureGaugeReadingTest {
 
     @Test
     public void testToString() {
-        PressureGaugeReading reading = new PressureGaugeReading("unique123", 101.5, "system123", 12.34, 56.78);
-        String expected = "PressureGaugeReading{id=null, gaugeUniqueIdentificator='unique123', pressure=101.5, systemId='system123', measureLat=12.34, measureLong=56.78, createdAt=null}";
+        LocalDateTime now = LocalDateTime.now();
+        PressureGaugeReading reading = new PressureGaugeReading(1L, "unique123", 101.5, "system123", 12.34, 56.78, now, now);
+        String expected = "PressureGaugeReading{id=1, gaugeUniqueIdentificator='unique123', pressure=101.5, systemId='system123', measureLat=12.34, measureLong=56.78, referenceDateTime=" + now.toString() +", createdAt="+ now.toString() + "}";
         assertEquals(expected, reading.toString());
     }    
 }

@@ -1,6 +1,7 @@
 package com.aguasfluentessa.pressuremonitor.model;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -37,6 +38,9 @@ public class PressureGaugeReading {
     @Column(nullable = false)
     private Double measureLong;
 
+    @Column(name = "reference_date_time", nullable = false)
+    private LocalDateTime referenceDateTime = LocalDateTime.now();
+
     @CreationTimestamp
     @Column(name= "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -53,13 +57,14 @@ public class PressureGaugeReading {
     }
 
     public PressureGaugeReading(Long id, String gaugeUniqueIdentificator, Double pressure, String systemId, Double measureLat,
-            Double measureLong, LocalDateTime createdAt) {
+            Double measureLong, LocalDateTime referenceDateTime, LocalDateTime createdAt) {
         this.id = id;
         this.gaugeUniqueIdentificator = gaugeUniqueIdentificator;
         this.pressure = pressure;
         this.systemId = systemId;
         this.measureLat = measureLat;
         this.measureLong = measureLong;
+        this.referenceDateTime = referenceDateTime;
         this.createdAt = createdAt;
     }
 
@@ -111,6 +116,10 @@ public class PressureGaugeReading {
         this.measureLong = measureLong;
     }
 
+    public void setReferenceDateTime(LocalDateTime referenceDateTime) {
+        this.referenceDateTime = referenceDateTime;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -122,12 +131,13 @@ public class PressureGaugeReading {
                 Objects.equals(systemId, that.systemId) &&
                 Objects.equals(measureLat, that.measureLat) &&
                 Objects.equals(measureLong, that.measureLong) &&
+                Objects.equals(referenceDateTime != null ? referenceDateTime.truncatedTo(ChronoUnit.SECONDS) : null, that.referenceDateTime != null ? that.referenceDateTime.truncatedTo(ChronoUnit.SECONDS) : null) &&
                 Objects.equals(createdAt, that.createdAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, gaugeUniqueIdentificator, pressure, systemId, measureLat, measureLong, createdAt);
+        return Objects.hash(id, gaugeUniqueIdentificator, pressure, systemId, measureLat, measureLong, referenceDateTime, createdAt);
     }
 
     @Override
@@ -139,6 +149,7 @@ public class PressureGaugeReading {
                 ", systemId='" + systemId + '\'' +
                 ", measureLat=" + measureLat +
                 ", measureLong=" + measureLong +
+                ", referenceDateTime=" + referenceDateTime +
                 ", createdAt=" + createdAt +
                 '}';
     }
