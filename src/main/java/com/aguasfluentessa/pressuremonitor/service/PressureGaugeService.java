@@ -3,9 +3,11 @@ package com.aguasfluentessa.pressuremonitor.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.aguasfluentessa.pressuremonitor.model.PressureGauge;
+import com.aguasfluentessa.pressuremonitor.model.Exception.DuplicatePressureGaugeException;
 import com.aguasfluentessa.pressuremonitor.model.Exception.PressureGaugeNotFoundException;
 import com.aguasfluentessa.pressuremonitor.repository.PressureGaugeRepository;
 
@@ -36,7 +38,11 @@ public class PressureGaugeService {
     }
 
     public PressureGauge save(PressureGauge pressureGauge) {
-        return pressureGaugeRepository.save(pressureGauge);
+        try {
+            return pressureGaugeRepository.save(pressureGauge);
+        } catch (DataIntegrityViolationException ex) {
+            throw new DuplicatePressureGaugeException("Pressure Gauge with the same systemId or gaugeUniqueIdentificator already exists");
+        }
     }
     
 
@@ -64,7 +70,11 @@ public class PressureGaugeService {
             existingGauge.setActive(pressureGauge.getActive());
         }
 
-        return pressureGaugeRepository.save(existingGauge);
+        try {
+            return pressureGaugeRepository.save(existingGauge);
+        } catch (DataIntegrityViolationException ex) {
+            throw new DuplicatePressureGaugeException("Pressure Gauge with the same systemId or gaugeUniqueIdentificator already exists");
+        }
     }
 
     public void disable_by_id(Long id) {

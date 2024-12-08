@@ -1,6 +1,7 @@
 package com.aguasfluentessa.pressuremonitor.controller.api.v1;
 
 import com.aguasfluentessa.pressuremonitor.model.PressureGauge;
+import com.aguasfluentessa.pressuremonitor.model.Exception.DuplicatePressureGaugeException;
 import com.aguasfluentessa.pressuremonitor.model.Exception.PressureGaugeNotFoundException;
 import com.aguasfluentessa.pressuremonitor.service.PressureGaugeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,5 +69,10 @@ public class PressureGaugeController extends AbstractV1ApiController {
     @ExceptionHandler(PressureGaugeNotFoundException.class)
     public ResponseEntity<String> handlePressureGaugeNotFoundException(PressureGaugeNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(DuplicatePressureGaugeException.class)
+    public ResponseEntity<String> handlePressureGaugeNotFoundException(DuplicatePressureGaugeException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 }

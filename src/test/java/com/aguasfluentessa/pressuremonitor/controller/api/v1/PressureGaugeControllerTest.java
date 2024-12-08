@@ -1,6 +1,7 @@
 package com.aguasfluentessa.pressuremonitor.controller.api.v1;
 
 import com.aguasfluentessa.pressuremonitor.model.PressureGauge;
+import com.aguasfluentessa.pressuremonitor.model.Exception.DuplicatePressureGaugeException;
 import com.aguasfluentessa.pressuremonitor.model.Exception.PressureGaugeNotFoundException;
 import com.aguasfluentessa.pressuremonitor.service.PressureGaugeService;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,19 +54,25 @@ public class PressureGaugeControllerTest {
     }
 
     @Test
-    public void testUpdatePressureGauge() throws Exception {
-        PressureGauge updatedGauge = new PressureGauge(1L, "updatedSystem", "updatedUnique", 45.67, 89.01, false, null, null);
-        when(pressureGaugeService.update(anyLong(), any(PressureGauge.class))).thenReturn(updatedGauge);
+    public void testCreatePressureGaugeAlreadyExists() throws Exception {
+        when(pressureGaugeService.save(any(PressureGauge.class))).thenThrow(new DuplicatePressureGaugeException("Pressure Gauge with the same systemId or gaugeUniqueIdentificator already exists"));
+
+        mockMvc.perform(post("/pressure-gauges")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"systemId\":\"system123\",\"gaugeUniqueIdentificator\":\"unique123\",\"lat\":12.34,\"lon\":56.78,\"active\":true}"))
+                .andExpect(status().isConflict());
+
+        verify(pressureGaugeService, times(1)).save(any(PressureGauge.class));
+    }
+
+    @Test
+    public void testUpdatePressureGaugeAlreadyExists() throws Exception {
+        when(pressureGaugeService.update(anyLong(), any(PressureGauge.class))).thenThrow(new DuplicatePressureGaugeException("Pressure Gauge with the same systemId or gaugeUniqueIdentificator already exists"));
 
         mockMvc.perform(put("/pressure-gauges/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"systemId\":\"updatedSystem\",\"gaugeUniqueIdentificator\":\"updatedUnique\",\"lat\":45.67,\"lon\":89.01,\"active\":false}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.systemId").value("updatedSystem"))
-                .andExpect(jsonPath("$.gaugeUniqueIdentificator").value("updatedUnique"))
-                .andExpect(jsonPath("$.lat").value(45.67))
-                .andExpect(jsonPath("$.lon").value(89.01))
-                .andExpect(jsonPath("$.active").value(false));
+                .andExpect(status().isConflict());
 
         verify(pressureGaugeService, times(1)).update(anyLong(), any(PressureGauge.class));
     }

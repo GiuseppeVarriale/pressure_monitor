@@ -1,6 +1,7 @@
 package com.aguasfluentessa.pressuremonitor.service;
 
 import com.aguasfluentessa.pressuremonitor.model.PressureGauge;
+import com.aguasfluentessa.pressuremonitor.model.Exception.DuplicatePressureGaugeException;
 import com.aguasfluentessa.pressuremonitor.model.Exception.PressureGaugeNotFoundException;
 import com.aguasfluentessa.pressuremonitor.repository.PressureGaugeRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 public class PressureGaugeServiceTest {
@@ -102,7 +105,16 @@ public class PressureGaugeServiceTest {
         verify(pressureGaugeRepository, times(1)).save(gauge1);
     }
 
-        @Test
+    @Test
+    public void testSaveDuplicate() {
+        when(pressureGaugeRepository.save(any(PressureGauge.class))).thenThrow(DataIntegrityViolationException.class);
+        assertThrows(DuplicatePressureGaugeException.class, () -> {
+            pressureGaugeService.save(gauge1);
+        });
+        verify(pressureGaugeRepository, times(1)).save(gauge1);
+    }
+
+    @Test
     public void testUpdate() {
         PressureGauge updatedGaugeData = new PressureGauge();
         updatedGaugeData.setSystemId("updatedSystem");
@@ -112,7 +124,8 @@ public class PressureGaugeServiceTest {
         updatedGaugeData.setActive(false);
 
         when(pressureGaugeRepository.findById(1L)).thenReturn(Optional.of(gauge1));
-        when(pressureGaugeRepository.save(any(PressureGauge.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(pressureGaugeRepository.save(any(PressureGauge.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         PressureGauge updatedGauge = pressureGaugeService.update(1L, updatedGaugeData);
 
@@ -124,6 +137,18 @@ public class PressureGaugeServiceTest {
 
         verify(pressureGaugeRepository, times(1)).findById(1L);
         verify(pressureGaugeRepository, times(1)).save(updatedGauge);
+    }
+
+    @Test
+    public void testUpdateDuplicate() {
+        when(pressureGaugeRepository.findById(anyLong())).thenReturn(Optional.of(gauge1));
+        when(pressureGaugeRepository.save(any(PressureGauge.class))).thenThrow(DataIntegrityViolationException.class);
+
+        assertThrows(DuplicatePressureGaugeException.class, () -> {
+            pressureGaugeService.update(1L, gauge1);
+        });
+        verify(pressureGaugeRepository, times(1)).findById(anyLong());
+        verify(pressureGaugeRepository, times(1)).save(gauge1);
     }
 
     @Test
