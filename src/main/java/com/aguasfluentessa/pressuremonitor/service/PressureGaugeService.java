@@ -38,6 +38,34 @@ public class PressureGaugeService {
     public PressureGauge save(PressureGauge pressureGauge) {
         return pressureGaugeRepository.save(pressureGauge);
     }
+    
+
+    public List<PressureGauge> findByStatus(Boolean active) {
+        return pressureGaugeRepository.findByActive(active);
+    }
+
+    public PressureGauge update(Long id, PressureGauge pressureGauge) {
+        PressureGauge existingGauge = pressureGaugeRepository.findById(id)
+                .orElseThrow(() -> new PressureGaugeNotFoundException("Pressure Gauge not found"));
+
+        if (pressureGauge.getSystemId() != null) {
+            existingGauge.setSystemId(pressureGauge.getSystemId());
+        }
+        if (pressureGauge.getGaugeUniqueIdentificator() != null) {
+            existingGauge.setGaugeUniqueIdentificator(pressureGauge.getGaugeUniqueIdentificator());
+        }
+        if (pressureGauge.getLat() != null) {
+            existingGauge.setLat(pressureGauge.getLat());
+        }
+        if (pressureGauge.getLon() != null) {
+            existingGauge.setLon(pressureGauge.getLon());
+        }
+        if (pressureGauge.getActive() != null) {
+            existingGauge.setActive(pressureGauge.getActive());
+        }
+
+        return pressureGaugeRepository.save(existingGauge);
+    }
 
     public void disable_by_id(Long id) {
         PressureGauge gauge = pressureGaugeRepository.findById(id)

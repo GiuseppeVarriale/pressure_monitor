@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class PressureGaugeServiceTest {
@@ -77,11 +78,67 @@ public class PressureGaugeServiceTest {
     }
 
     @Test
+    public void testFindByStatus() {
+        when(pressureGaugeRepository.findByActive(true)).thenReturn(Arrays.asList(gauge1));
+        when(pressureGaugeRepository.findByActive(false)).thenReturn(Arrays.asList(gauge2));
+
+        List<PressureGauge> activeGauges = pressureGaugeService.findByStatus(true);
+        assertEquals(1, activeGauges.size());
+        assertTrue(activeGauges.contains(gauge1));
+
+        List<PressureGauge> inactiveGauges = pressureGaugeService.findByStatus(false);
+        assertEquals(1, inactiveGauges.size());
+        assertTrue(inactiveGauges.contains(gauge2));
+
+        verify(pressureGaugeRepository, times(1)).findByActive(true);
+        verify(pressureGaugeRepository, times(1)).findByActive(false);
+    }
+
+    @Test
     public void testSave() {
         when(pressureGaugeRepository.save(gauge1)).thenReturn(gauge1);
         PressureGauge savedGauge = pressureGaugeService.save(gauge1);
         assertEquals(gauge1, savedGauge);
         verify(pressureGaugeRepository, times(1)).save(gauge1);
+    }
+
+        @Test
+    public void testUpdate() {
+        PressureGauge updatedGaugeData = new PressureGauge();
+        updatedGaugeData.setSystemId("updatedSystem");
+        updatedGaugeData.setGaugeUniqueIdentificator("updatedUnique");
+        updatedGaugeData.setLat(45.67);
+        updatedGaugeData.setLon(89.01);
+        updatedGaugeData.setActive(false);
+
+        when(pressureGaugeRepository.findById(1L)).thenReturn(Optional.of(gauge1));
+        when(pressureGaugeRepository.save(any(PressureGauge.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        PressureGauge updatedGauge = pressureGaugeService.update(1L, updatedGaugeData);
+
+        assertEquals("updatedSystem", updatedGauge.getSystemId());
+        assertEquals("updatedUnique", updatedGauge.getGaugeUniqueIdentificator());
+        assertEquals(45.67, updatedGauge.getLat());
+        assertEquals(89.01, updatedGauge.getLon());
+        assertFalse(updatedGauge.getActive());
+
+        verify(pressureGaugeRepository, times(1)).findById(1L);
+        verify(pressureGaugeRepository, times(1)).save(updatedGauge);
+    }
+
+    @Test
+    public void testUpdateNotFound() {
+        PressureGauge updatedGaugeData = new PressureGauge();
+        updatedGaugeData.setSystemId("updatedSystem");
+
+        when(pressureGaugeRepository.findById(3L)).thenReturn(Optional.empty());
+
+        assertThrows(PressureGaugeNotFoundException.class, () -> {
+            pressureGaugeService.update(3L, updatedGaugeData);
+        });
+
+        verify(pressureGaugeRepository, times(1)).findById(3L);
+        verify(pressureGaugeRepository, times(0)).save(any(PressureGauge.class));
     }
 
     @Test
