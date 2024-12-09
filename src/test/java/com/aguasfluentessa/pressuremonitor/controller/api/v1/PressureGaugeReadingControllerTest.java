@@ -49,7 +49,7 @@ public class PressureGaugeReadingControllerTest {
         when(pressureGaugeReadingService.findByFilters(any(LocalDateTime.class), any(LocalDateTime.class), anyDouble(), anyDouble()))
                 .thenReturn(readings);
 
-        mockMvc.perform(get("/pressure-gauge-readings")
+        mockMvc.perform(get("/api/v1/pressure-gauge-readings")
                 .param("startDate", "2023-01-01T00:00:00")
                 .param("endDate", "2023-12-31T23:59:59")
                 .param("minPressure", "100.0")
@@ -71,7 +71,7 @@ public class PressureGaugeReadingControllerTest {
         when(pressureGaugeReadingService.findByFilters(any(LocalDateTime.class), any(LocalDateTime.class), anyDouble(), anyDouble()))
                 .thenReturn(readings);
 
-        mockMvc.perform(get("/pressure-gauge-readings")
+        mockMvc.perform(get("/api/v1/pressure-gauge-readings")
                 .param("startDate", "2023-01-01T00:00:00")
                 .param("endDate", "2023-12-31T23:59:59")
                 .param("minPressure", "100.0")
@@ -91,9 +91,8 @@ public class PressureGaugeReadingControllerTest {
 
         when(pressureGaugeReadingService.save(anyString(), anyDouble())).thenReturn(reading);
 
-        mockMvc.perform(post("/pressure-gauge-readings")
-                .param("gaugeUniqueIdentificator", "unique123")
-                .param("pressure", "101.5")
+        mockMvc.perform(post("/api/v1/pressure-gauge-readings")
+                .content("{\"gaugeUniqueIdentificator\":\"unique123\",\"pressure\":101.5}")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.gaugeUniqueIdentificator").value("unique123"))
@@ -104,9 +103,8 @@ public class PressureGaugeReadingControllerTest {
     public void testCreateReadingPressureGaugeNotFound() throws Exception {
         when(pressureGaugeReadingService.save(anyString(), anyDouble())).thenThrow(new PressureGaugeNotFoundException("Pressure Gauge not found"));
 
-        mockMvc.perform(post("/pressure-gauge-readings")
-                .param("gaugeUniqueIdentificator", "unique123")
-                .param("pressure", "101.5")
+        mockMvc.perform(post("/api/v1/pressure-gauge-readings")
+                .content("{\"gaugeUniqueIdentificator\":\"unique123\",\"pressure\":101.5}")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Pressure Gauge not found"));

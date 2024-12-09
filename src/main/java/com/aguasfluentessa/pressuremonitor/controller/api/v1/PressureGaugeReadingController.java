@@ -1,8 +1,12 @@
 package com.aguasfluentessa.pressuremonitor.controller.api.v1;
 
+import com.aguasfluentessa.pressuremonitor.dto.PressureGaugeReadingRequest;
 import com.aguasfluentessa.pressuremonitor.model.PressureGaugeReading;
 import com.aguasfluentessa.pressuremonitor.model.Exception.PressureGaugeNotFoundException;
 import com.aguasfluentessa.pressuremonitor.service.PressureGaugeReadingService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/pressure-gauge-readings")
+@RequestMapping("/api/v1/pressure-gauge-readings")
 public class PressureGaugeReadingController extends AbstractV1ApiController {
 
     @Autowired
@@ -30,9 +34,9 @@ public class PressureGaugeReadingController extends AbstractV1ApiController {
     }
 
     @PostMapping
-    public ResponseEntity<PressureGaugeReading> createReading(@RequestParam String gaugeUniqueIdentificator,
-            @RequestParam Double pressure) {
-        PressureGaugeReading reading = pressureGaugeReadingService.save(gaugeUniqueIdentificator, pressure);
+    public ResponseEntity<PressureGaugeReading> createReading(@Valid @RequestBody PressureGaugeReadingRequest request) {
+        PressureGaugeReading reading = pressureGaugeReadingService.save(request.getGaugeUniqueIdentificator(),
+                request.getPressure());
         return ResponseEntity.status(HttpStatus.CREATED).body(reading);
     }
 
