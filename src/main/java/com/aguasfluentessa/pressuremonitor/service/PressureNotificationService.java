@@ -19,6 +19,9 @@ public class PressureNotificationService {
     @Autowired
     private PressureNotificationRepository pressureNotificationRepository;
 
+    @Autowired
+    private ExternalSystemNotifierService externalSystemNotifierService;
+
     public List<PressureNotification> findByFilters(LocalDateTime startDate, LocalDateTime endDate,
             Boolean acknowledged,
             String gaugeUniqueIdentificator, AlertLevel alertLevel, AlertType alertType) {
@@ -35,5 +38,11 @@ public class PressureNotificationService {
                 .orElseThrow(() -> new EntityNotFoundException("Notification not found"));
         notification.setAcknowledged(true);
         pressureNotificationRepository.save(notification);
+    }
+
+    public PressureNotification save(PressureNotification notification) {
+        PressureNotification savedNotification = pressureNotificationRepository.save(notification);
+        externalSystemNotifierService.notifyExternalSystem(savedNotification);
+        return savedNotification;
     }
 }

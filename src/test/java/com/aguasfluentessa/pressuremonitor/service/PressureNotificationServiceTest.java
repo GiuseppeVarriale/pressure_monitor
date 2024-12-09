@@ -1,5 +1,6 @@
 package com.aguasfluentessa.pressuremonitor.service;
 
+import com.aguasfluentessa.pressuremonitor.Exceptions.ErrorSendindNotificationToMainServerException;
 import com.aguasfluentessa.pressuremonitor.model.PressureNotification;
 import com.aguasfluentessa.pressuremonitor.model.PressureNotificationEnums.AlertLevel;
 import com.aguasfluentessa.pressuremonitor.model.PressureNotificationEnums.AlertType;
@@ -17,13 +18,16 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-
 
 public class PressureNotificationServiceTest {
 
     @Mock
     private PressureNotificationRepository pressureNotificationRepository;
+
+    @Mock
+    private ExternalSystemNotifierService externalSystemNotifierService;
 
     @InjectMocks
     private PressureNotificationService pressureNotificationService;
@@ -93,5 +97,48 @@ public class PressureNotificationServiceTest {
         assertEquals("Notification not found", exception.getMessage());
         verify(pressureNotificationRepository, times(1)).findById(1L);
         verify(pressureNotificationRepository, times(0)).save(any());
+    }
+
+    @Test
+    public void testSaveNotification() {
+        PressureNotification notification = new PressureNotification(
+                "unique123",
+                25.0,
+                AlertLevel.HIGH,
+                AlertType.HIGH_PRESSURE,
+                false,
+                LocalDateTime.now()
+        );
+
+        when(pressureNotificationRepository.save(notification)).thenReturn(notification);
+
+        PressureNotification savedNotification = pressureNotificationService.save(notification);
+
+        assertNotNull(savedNotification);
+        verify(pressureNotificationRepository, times(1)).save(notification);
+        verify(externalSystemNotifierService, times(1)).notifyExternalSystem(notification);
+    }
+
+    @Test
+    public void testSaveNotificationWithExternalSystemFailure() {
+        PressureNotification notification = new PressureNotification(
+                "unique123",
+                25.0,
+                AlertLevel.HIGH,
+                AlertType.HIGH_PRESSURE,
+                false,
+                LocalDateTime.now()
+        );
+
+        when(pressureNotificationRepository.save(notification)).thenReturn(notification);
+        doThrow(new ErrorSendindNotificationToMainServerException("Failed to notify external system after 5 attempts")).when(externalSystemNotifierService).notifyExternalSystem(notification);
+
+        ErrorSendindNotificationToMainServerException exception = assertThrows(ErrorSendindNotificationToMainServerException.class, () -> {
+            pressureNotificationService.save(notification);
+        });
+
+        assertEquals("Failed to notify external system after 5 attempts", exception.getMessage());
+        verify(pressureNotificationRepository, times(1)).save(notification);
+        verify(externalSystemNotifierService, times(1)).notifyExternalSystem(notification);
     }
 }
