@@ -19,8 +19,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -35,9 +33,6 @@ public class PressureGaugeReadingServiceTest extends BaseTestConfig {
 
     @Mock
     private PressureGaugeRepository pressureGaugeRepository;
-
-    @Mock
-    private InMemoryPressureGaugeStoreService inMemoryPressureGaugeStore;
 
     @InjectMocks
     private PressureGaugeReadingService pressureGaugeReadingService;
@@ -106,7 +101,6 @@ public class PressureGaugeReadingServiceTest extends BaseTestConfig {
     //     assertEquals(12.34, savedReading.getMeasureLat());
     //     assertEquals(56.78, savedReading.getMeasureLong());
 
-    //     verify(inMemoryPressureGaugeStore, times(1)).addReading(savedReading);
     // }
 
     @Test
@@ -121,20 +115,5 @@ public class PressureGaugeReadingServiceTest extends BaseTestConfig {
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
-    }
-
-    public void testGetLastReadingsInMemory() {
-        Deque<PressureGaugeReading> readings = new LinkedList<>();
-        PressureGaugeReading reading1 = new PressureGaugeReading("unique123", 101.5, "system123", 12.34, 56.78);
-        PressureGaugeReading reading2 = new PressureGaugeReading("unique123", 102.5, "system123", 12.34, 56.78);
-        readings.add(reading1);
-        readings.add(reading2);
-
-        when(inMemoryPressureGaugeStore.getReadings("unique123")).thenReturn(readings);
-
-        Deque<PressureGaugeReading> result = pressureGaugeReadingService.getLastReadingsInMemory("unique123");
-        assertEquals(2, result.size());
-        assertTrue(result.contains(reading1));
-        assertTrue(result.contains(reading2));
     }
 }

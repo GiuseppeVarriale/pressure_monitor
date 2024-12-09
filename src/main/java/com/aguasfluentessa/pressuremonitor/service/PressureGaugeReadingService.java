@@ -11,8 +11,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Deque;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PressureGaugeReadingService {
@@ -22,9 +23,6 @@ public class PressureGaugeReadingService {
 
     @Autowired
     private PressureGaugeRepository pressureGaugeRepository;
-
-    @Autowired
-    private InMemoryPressureGaugeStoreService inMemoryPressureGaugeStore;
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -60,17 +58,29 @@ public class PressureGaugeReadingService {
                 pressureGauge.getLon());
 
         PressureGaugeReading savedReading = pressureGaugeReadingRepository.save(reading);
-        inMemoryPressureGaugeStore.addReading(savedReading);
-        addReadingToQueue(savedReading);
+        addReadingsToGauge(savedReading);
+        addGaugeReadingToProcessQueue(savedReading);
         return savedReading;
     }
 
-    private void addReadingToQueue(PressureGaugeReading reading) {
-        redisTemplate.opsForList().leftPush("pressureReadingsQueue", reading.getGaugeUniqueIdentificator());
+    private void addGaugeReadingToProcessQueue(PressureGaugeReading reading) {
+        redisTemplate.opsForList().leftPush("pressureReadingsProcessQueue", reading.getGaugeUniqueIdentificator());
     }
 
-    public Deque<PressureGaugeReading> getLastReadingsInMemory(String gaugeUniqueIdentificator) {
-        return inMemoryPressureGaugeStore.getReadings(gaugeUniqueIdentificator);
+    private void addReadingsToGauge(PressureGaugeReading reading) {
+        String key = "GaugeMeasure_" + reading.getGaugeUniqueIdentificator();
+        redisTemplate.opsForList().leftPush(key, reading.getPressure());
+        redisTemplate.opsForList().trim(key, 0, 9);
     }
 
+    public List<Double> getLastReadings(String gaugeUniqueIdentificator) {
+        String key = "GaugeMeasure_" + gaugeUniqueIdentificator;
+        List<Object> objects = redisTemplate.opsForList().range(key, 0, -1);
+        if (objects == null) {
+            return new ArrayList<>();
+        }
+        return objects.stream()
+                      .map(obj -> (Double) obj)
+                      .collect(Collectors.toList());
+    }
 }
