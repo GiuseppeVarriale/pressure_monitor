@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/pressure-gauges")
+@RequestMapping("/api/v1/pressure-gauges")
 public class PressureGaugeController extends AbstractV1ApiController {
 
     @Autowired

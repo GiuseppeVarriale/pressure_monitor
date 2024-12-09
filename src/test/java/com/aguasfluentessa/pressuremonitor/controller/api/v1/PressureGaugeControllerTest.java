@@ -43,7 +43,7 @@ public class PressureGaugeControllerTest {
     public void testCreatePressureGauge() throws Exception {
         when(pressureGaugeService.save(any(PressureGauge.class))).thenReturn(gauge1);
 
-        mockMvc.perform(post("/pressure-gauges")
+        mockMvc.perform(post("/api/v1/pressure-gauges")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"systemId\":\"system123\",\"gaugeUniqueIdentificator\":\"unique123\",\"lat\":12.34,\"lon\":56.78,\"active\":true}"))
                 .andExpect(status().isCreated())
@@ -57,7 +57,7 @@ public class PressureGaugeControllerTest {
     public void testCreatePressureGaugeAlreadyExists() throws Exception {
         when(pressureGaugeService.save(any(PressureGauge.class))).thenThrow(new DuplicatePressureGaugeException("Pressure Gauge with the same systemId or gaugeUniqueIdentificator already exists"));
 
-        mockMvc.perform(post("/pressure-gauges")
+        mockMvc.perform(post("/api/v1/pressure-gauges")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"systemId\":\"system123\",\"gaugeUniqueIdentificator\":\"unique123\",\"lat\":12.34,\"lon\":56.78,\"active\":true}"))
                 .andExpect(status().isConflict());
@@ -69,7 +69,7 @@ public class PressureGaugeControllerTest {
     public void testUpdatePressureGaugeAlreadyExists() throws Exception {
         when(pressureGaugeService.update(anyLong(), any(PressureGauge.class))).thenThrow(new DuplicatePressureGaugeException("Pressure Gauge with the same systemId or gaugeUniqueIdentificator already exists"));
 
-        mockMvc.perform(put("/pressure-gauges/1")
+        mockMvc.perform(put("/api/v1/pressure-gauges/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"systemId\":\"updatedSystem\",\"gaugeUniqueIdentificator\":\"updatedUnique\",\"lat\":45.67,\"lon\":89.01,\"active\":false}"))
                 .andExpect(status().isConflict());
@@ -81,7 +81,7 @@ public class PressureGaugeControllerTest {
     public void testUpdatePressureGaugeNotFound() throws Exception {
         when(pressureGaugeService.update(anyLong(), any(PressureGauge.class))).thenThrow(new PressureGaugeNotFoundException("Pressure Gauge not found"));
 
-        mockMvc.perform(put("/pressure-gauges/1")
+        mockMvc.perform(put("/api/v1/pressure-gauges/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"systemId\":\"updatedSystem\",\"gaugeUniqueIdentificator\":\"updatedUnique\",\"lat\":45.67,\"lon\":89.01,\"active\":false}"))
                 .andExpect(status().isNotFound())
@@ -95,11 +95,11 @@ public class PressureGaugeControllerTest {
         when(pressureGaugeService.findByStatus(true)).thenReturn(Arrays.asList(gauge1));
         when(pressureGaugeService.findByStatus(false)).thenReturn(Arrays.asList(gauge2));
 
-        mockMvc.perform(get("/pressure-gauges?active=true"))
+        mockMvc.perform(get("/api/v1/pressure-gauges?active=true"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].systemId").value("system123"));
 
-        mockMvc.perform(get("/pressure-gauges?active=false"))
+        mockMvc.perform(get("/api/v1/pressure-gauges?active=false"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].systemId").value("system456"));
 
@@ -111,7 +111,7 @@ public class PressureGaugeControllerTest {
     public void testShowPressureGaugeBySystemId() throws Exception {
         when(pressureGaugeService.findBySystemId(anyString())).thenReturn(gauge1);
 
-        mockMvc.perform(get("/pressure-gauges/system-id/system123"))
+        mockMvc.perform(get("/api/v1/pressure-gauges/system-id/system123"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.systemId").value("system123"));
 
@@ -122,7 +122,7 @@ public class PressureGaugeControllerTest {
     public void testShowPressureGaugeBySystemIdNotFound() throws Exception {
         when(pressureGaugeService.findBySystemId(anyString())).thenThrow(new PressureGaugeNotFoundException("Pressure Gauge not found"));
 
-        mockMvc.perform(get("/pressure-gauges/system-id/system123"))
+        mockMvc.perform(get("/api/v1/pressure-gauges/system-id/system123"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Pressure Gauge not found"));
 
@@ -133,7 +133,7 @@ public class PressureGaugeControllerTest {
     public void testShowPressureGaugeByGaugeUniqueIdentificator() throws Exception {
         when(pressureGaugeService.findByGaugeUniqueIdentificator(anyString())).thenReturn(gauge1);
 
-        mockMvc.perform(get("/pressure-gauges/gauge-unique-id/unique123"))
+        mockMvc.perform(get("/api/v1/pressure-gauges/gauge-unique-id/unique123"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.gaugeUniqueIdentificator").value("unique123"));
 
@@ -144,7 +144,7 @@ public class PressureGaugeControllerTest {
     public void testShowPressureGaugeByGaugeUniqueIdentificatorNotFound() throws Exception {
         when(pressureGaugeService.findByGaugeUniqueIdentificator(anyString())).thenThrow(new PressureGaugeNotFoundException("Pressure Gauge not found"));
 
-        mockMvc.perform(get("/pressure-gauges/gauge-unique-id/unique123"))
+        mockMvc.perform(get("/api/v1/pressure-gauges/gauge-unique-id/unique123"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Pressure Gauge not found"));
 
@@ -155,7 +155,7 @@ public class PressureGaugeControllerTest {
     public void testDeletePressureGaugeById() throws Exception {
         doNothing().when(pressureGaugeService).disable_by_id(anyLong());
 
-        mockMvc.perform(delete("/pressure-gauges/1"))
+        mockMvc.perform(delete("/api/v1/pressure-gauges/1"))
                 .andExpect(status().isNoContent());
 
         verify(pressureGaugeService, times(1)).disable_by_id(anyLong());
@@ -165,7 +165,7 @@ public class PressureGaugeControllerTest {
     public void testDeletePressureGaugeByIdNotFound() throws Exception {
         doThrow(new PressureGaugeNotFoundException("Pressure Gauge not found")).when(pressureGaugeService).disable_by_id(anyLong());
 
-        mockMvc.perform(delete("/pressure-gauges/1"))
+        mockMvc.perform(delete("/api/v1/pressure-gauges/1"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Pressure Gauge not found"));
 
@@ -176,7 +176,7 @@ public class PressureGaugeControllerTest {
     public void testDeletePressureGaugeBySystemIdNotFound() throws Exception {
         doThrow(new PressureGaugeNotFoundException("Pressure Gauge not found")).when(pressureGaugeService).disable_by_system_id(anyString());
 
-        mockMvc.perform(delete("/pressure-gauges/system-id/system123"))
+        mockMvc.perform(delete("/api/v1/pressure-gauges/system-id/system123"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Pressure Gauge not found"));
 
@@ -187,7 +187,7 @@ public class PressureGaugeControllerTest {
     public void testDeletePressureGaugeBySystemId() throws Exception {
         doNothing().when(pressureGaugeService).disable_by_system_id(anyString());
 
-        mockMvc.perform(delete("/pressure-gauges/system-id/system123"))
+        mockMvc.perform(delete("/api/v1/pressure-gauges/system-id/system123"))
                 .andExpect(status().isNoContent());
 
         verify(pressureGaugeService, times(1)).disable_by_system_id(anyString());
@@ -197,7 +197,7 @@ public class PressureGaugeControllerTest {
     public void testDeletePressureGaugeByGaugeUniqueIdentificator() throws Exception {
         doNothing().when(pressureGaugeService).disable_by_gauge_unique_identificator(anyString());
 
-        mockMvc.perform(delete("/pressure-gauges/gauge-unique-id/unique123"))
+        mockMvc.perform(delete("/api/v1/pressure-gauges/gauge-unique-id/unique123"))
                 .andExpect(status().isNoContent());
 
         verify(pressureGaugeService, times(1)).disable_by_gauge_unique_identificator(anyString());
@@ -207,7 +207,7 @@ public class PressureGaugeControllerTest {
     public void testDeletePressureGaugeByGaugeUniqueIdentificatorNotFound() throws Exception {
         doThrow(new PressureGaugeNotFoundException("Pressure Gauge not found")).when(pressureGaugeService).disable_by_gauge_unique_identificator(anyString());
 
-        mockMvc.perform(delete("/pressure-gauges/gauge-unique-id/unique123"))
+        mockMvc.perform(delete("/api/v1/pressure-gauges/gauge-unique-id/unique123"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Pressure Gauge not found"));
 
@@ -218,7 +218,7 @@ public class PressureGaugeControllerTest {
     public void testHandleGenericException() throws Exception {
         when(pressureGaugeService.findBySystemId(anyString())).thenThrow(new RuntimeException("Unexpected error"));
 
-        mockMvc.perform(get("/pressure-gauges/system-id/system123"))
+        mockMvc.perform(get("/api/v1/pressure-gauges/system-id/system123"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().string("An unexpected error occurred: Unexpected error"));
 
