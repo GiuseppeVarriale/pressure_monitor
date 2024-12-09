@@ -43,7 +43,7 @@ public class RedisQueueConsumer {
             if (gaugeUniqueIdentificator != null) {
                 List<Double> readings = pressureGaugeReadingService.getLastReadings(gaugeUniqueIdentificator);
                 if (readings.size() > 0) {
-                    pressureProcessor.processPressure(readings);
+                    pressureProcessor.processPressure(readings, gaugeUniqueIdentificator);
                 }
             }
         }
