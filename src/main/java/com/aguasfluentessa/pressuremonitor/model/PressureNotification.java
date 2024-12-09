@@ -1,6 +1,7 @@
 package com.aguasfluentessa.pressuremonitor.model;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -45,6 +46,9 @@ public class PressureNotification {
     @Column(nullable = false)
     private Boolean acknowledged; 
 
+    @Column(name = "reference_date_time", nullable = false)
+    private LocalDateTime referenceDateTime = LocalDateTime.now();
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -57,24 +61,27 @@ public class PressureNotification {
     }
     
     public PressureNotification(Long id, String gaugeUniqueIdentificator, Double pressure, AlertLevel alertLevel,
-            AlertType alertType, Boolean acknowledged, LocalDateTime createdAt, LocalDateTime updatedAt) {
+            AlertType alertType, Boolean acknowledged, LocalDateTime referenLocalDateTime, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.gaugeUniqueIdentificator = gaugeUniqueIdentificator;
         this.pressure = pressure;
         this.alertLevel = alertLevel;
         this.alertType = alertType;
         this.acknowledged = acknowledged;
+        this.referenceDateTime = referenLocalDateTime;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
     public PressureNotification(String gaugeUniqueIdentificator, Double pressure, AlertLevel alertLevel,
-            AlertType alertType, Boolean acknowledged) {
+            AlertType alertType, Boolean acknowledged, LocalDateTime referenceDateTime) {
         this.gaugeUniqueIdentificator = gaugeUniqueIdentificator;
         this.pressure = pressure;
         this.alertLevel = alertLevel;
         this.alertType = alertType;
         this.acknowledged = acknowledged;
+        this.referenceDateTime = referenceDateTime;
+
     }
 
     public Long getId() {
@@ -125,6 +132,14 @@ public class PressureNotification {
         this.acknowledged = acknowledged;
     }
 
+    public LocalDateTime getReferenceDateTime() {
+        return referenceDateTime;
+    }
+
+    public void setReferenceDateTime(LocalDateTime referenceDateTime) {
+        this.referenceDateTime = referenceDateTime;
+    }
+    
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -133,6 +148,7 @@ public class PressureNotification {
         this.createdAt = createdAt;
     }
 
+    
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
@@ -155,6 +171,7 @@ public class PressureNotification {
                 alertLevel == that.alertLevel &&
                 alertType == that.alertType &&
                 Objects.equals(acknowledged, that.acknowledged) &&
+                Objects.equals(referenceDateTime != null ? referenceDateTime.truncatedTo(ChronoUnit.SECONDS) : null, that.referenceDateTime != null ? that.referenceDateTime.truncatedTo(ChronoUnit.SECONDS) : null) &&
                 Objects.equals(createdAt, that.createdAt) &&
                 Objects.equals(updatedAt, that.updatedAt);
     }
@@ -168,7 +185,7 @@ public class PressureNotification {
     public String toString() {
         return "PressureNotification [id=" + id + ", gaugeUniqueIdentificator=" + gaugeUniqueIdentificator
                 + ", pressure=" + pressure + ", alertLevel=" + alertLevel + ", alertType=" + alertType
-                + ", acknowledged=" + acknowledged + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
+                + ", acknowledged=" + acknowledged + ", referenceDateTime=" + referenceDateTime + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
     }
    
 }
