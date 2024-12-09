@@ -220,7 +220,7 @@ public class PressureGaugeControllerTest {
 
         mockMvc.perform(get("/api/v1/pressure-gauges/system-id/system123"))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().string("An unexpected error occurred: Unexpected error"));
+                .andExpect(content().string("An unexpected error occurred"));
 
         verify(pressureGaugeService, times(1)).findBySystemId(anyString());
     }
