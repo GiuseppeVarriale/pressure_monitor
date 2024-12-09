@@ -1,8 +1,8 @@
 package com.aguasfluentessa.pressuremonitor.controller.api.v1;
 
+import com.aguasfluentessa.pressuremonitor.Exceptions.DuplicatePressureGaugeException;
+import com.aguasfluentessa.pressuremonitor.Exceptions.PressureGaugeNotFoundException;
 import com.aguasfluentessa.pressuremonitor.model.PressureGauge;
-import com.aguasfluentessa.pressuremonitor.model.Exception.DuplicatePressureGaugeException;
-import com.aguasfluentessa.pressuremonitor.model.Exception.PressureGaugeNotFoundException;
 import com.aguasfluentessa.pressuremonitor.service.PressureGaugeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

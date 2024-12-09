@@ -1,4 +1,4 @@
-package com.aguasfluentessa.pressuremonitor.model.Exception;
+package com.aguasfluentessa.pressuremonitor.Exceptions;
 
 public class DuplicatePressureGaugeException extends RuntimeException {
     public DuplicatePressureGaugeException(String message) {

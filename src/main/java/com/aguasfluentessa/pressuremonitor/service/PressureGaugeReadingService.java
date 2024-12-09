@@ -1,8 +1,8 @@
 package com.aguasfluentessa.pressuremonitor.service;
 
+import com.aguasfluentessa.pressuremonitor.Exceptions.PressureGaugeNotFoundException;
 import com.aguasfluentessa.pressuremonitor.model.PressureGauge;
 import com.aguasfluentessa.pressuremonitor.model.PressureGaugeReading;
-import com.aguasfluentessa.pressuremonitor.model.Exception.PressureGaugeNotFoundException;
 import com.aguasfluentessa.pressuremonitor.repository.PressureGaugeReadingRepository;
 import com.aguasfluentessa.pressuremonitor.repository.PressureGaugeRepository;
 

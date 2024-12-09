@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import com.aguasfluentessa.pressuremonitor.Exceptions.DuplicatePressureGaugeException;
+import com.aguasfluentessa.pressuremonitor.Exceptions.PressureGaugeNotFoundException;
 import com.aguasfluentessa.pressuremonitor.model.PressureGauge;
-import com.aguasfluentessa.pressuremonitor.model.Exception.DuplicatePressureGaugeException;
-import com.aguasfluentessa.pressuremonitor.model.Exception.PressureGaugeNotFoundException;
 import com.aguasfluentessa.pressuremonitor.repository.PressureGaugeRepository;
 
 @Service

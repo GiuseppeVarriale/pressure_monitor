@@ -1,8 +1,8 @@
 package com.aguasfluentessa.pressuremonitor.controller.api.v1;
 
+import com.aguasfluentessa.pressuremonitor.Exceptions.PressureGaugeNotFoundException;
 import com.aguasfluentessa.pressuremonitor.dto.PressureGaugeReadingRequest;
 import com.aguasfluentessa.pressuremonitor.model.PressureGaugeReading;
-import com.aguasfluentessa.pressuremonitor.model.Exception.PressureGaugeNotFoundException;
 import com.aguasfluentessa.pressuremonitor.service.PressureGaugeReadingService;
 
 import jakarta.validation.Valid;
