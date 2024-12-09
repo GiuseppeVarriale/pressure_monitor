@@ -7,6 +7,7 @@ import com.aguasfluentessa.pressuremonitor.repository.PressureGaugeReadingReposi
 import com.aguasfluentessa.pressuremonitor.repository.PressureGaugeRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,6 +26,14 @@ public class PressureGaugeReadingService {
     @Autowired
     private InMemoryPressureGaugeStoreService inMemoryPressureGaugeStore;
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    private PressureGaugeReadingService(RedisTemplate<String, Object> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
+
+        
     public List<PressureGaugeReading> findAll() {
         return pressureGaugeReadingRepository.findAll();
     }
@@ -52,7 +61,12 @@ public class PressureGaugeReadingService {
 
         PressureGaugeReading savedReading = pressureGaugeReadingRepository.save(reading);
         inMemoryPressureGaugeStore.addReading(savedReading);
+        addReadingToQueue(savedReading);
         return savedReading;
+    }
+
+    private void addReadingToQueue(PressureGaugeReading reading) {
+        redisTemplate.opsForList().leftPush("pressureReadingsQueue", reading.getGaugeUniqueIdentificator());
     }
 
     public Deque<PressureGaugeReading> getLastReadingsInMemory(String gaugeUniqueIdentificator) {
