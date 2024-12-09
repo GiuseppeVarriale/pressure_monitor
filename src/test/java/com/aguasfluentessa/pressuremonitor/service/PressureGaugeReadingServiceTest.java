@@ -54,7 +54,9 @@ public class PressureGaugeReadingServiceTest extends BaseTestConfig {
     @Test
     public void testRedisConnection() {
         assertNotNull(connectionFactory.getConnection());
-        assertTrue(connectionFactory.getConnection().ping().equalsIgnoreCase("PONG"));
+        String pingResponse = connectionFactory.getConnection().ping();
+        assertNotNull(pingResponse);
+        assertTrue(pingResponse.equalsIgnoreCase("PONG"));
     }
 
     @Test

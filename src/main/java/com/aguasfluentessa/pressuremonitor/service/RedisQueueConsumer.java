@@ -1,6 +1,5 @@
 package com.aguasfluentessa.pressuremonitor.service;
 
-import com.aguasfluentessa.pressuremonitor.model.PressureGaugeReading;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
