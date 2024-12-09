@@ -8,7 +8,7 @@ public class PressureGaugeReadingRequest {
     @NotBlank(message = "Gauge Unique Identificator cannot be blank")
     private String gaugeUniqueIdentificator;
 
-    @NotNull(message = "Pressure cannot be null")
+    @NotNull(message = "Pressure cannot be blank or null")
     private Double pressure;
 
     public String getGaugeUniqueIdentificator() {

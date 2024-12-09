@@ -100,6 +100,24 @@ public class PressureGaugeReadingControllerTest {
     }
 
     @Test
+    public void testCreateReadingWithBlankGaugeUniqueIdentificator() throws Exception {
+        mockMvc.perform(post("/api/v1/pressure-gauge-readings")
+                .content("{\"gaugeUniqueIdentificator\":\"\",\"pressure\":101.5}")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.gaugeUniqueIdentificator").value("Gauge Unique Identificator cannot be blank"));
+    }
+
+    @Test
+    public void testCreateReadingWithNullPressure() throws Exception {
+        mockMvc.perform(post("/api/v1/pressure-gauge-readings")
+                .content("{\"gaugeUniqueIdentificator\":\"unique123\",\"pressure\":null}")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.pressure").value("Pressure cannot be blank or null"));
+    }
+
+    @Test
     public void testCreateReadingPressureGaugeNotFound() throws Exception {
         when(pressureGaugeReadingService.save(anyString(), anyDouble())).thenThrow(new PressureGaugeNotFoundException("Pressure Gauge not found"));
 
