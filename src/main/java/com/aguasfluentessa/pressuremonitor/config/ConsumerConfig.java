@@ -1,7 +1,6 @@
 package com.aguasfluentessa.pressuremonitor.config;
 
 import com.aguasfluentessa.pressuremonitor.service.RedisQueueConsumer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +8,7 @@ import jakarta.annotation.PostConstruct;
 
 @Configuration
 public class ConsumerConfig {
+    private static final Logger logger = LoggerFactory.getLogger(RedisQueueConsumer.class);
     private final RedisQueueConsumer redisQueueConsumer;
 
     public ConsumerConfig(RedisQueueConsumer redisQueueConsumer) {
