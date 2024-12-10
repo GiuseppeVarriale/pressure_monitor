@@ -10,6 +10,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.core.env.Environment;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
@@ -23,32 +24,35 @@ import static org.mockito.Mockito.*;
 import java.time.LocalDateTime;
 
 @ActiveProfiles("test")
-public class ExternalSystemNotifierServiceTest{
+public class ExternalSystemNotifierServiceTest {
 
     @Mock
     private RestTemplate restTemplate;
 
+    @Mock
+    private Environment environment;
+
     @InjectMocks
     private ExternalSystemNotifierService externalSystemNotifierService;
 
- @BeforeEach
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        externalSystemNotifierService = new ExternalSystemNotifierService(restTemplate);
+        externalSystemNotifierService = new ExternalSystemNotifierService(restTemplate, environment);
         externalSystemNotifierService.mainSystemUrl = "http://example.com/api/notifications";
         externalSystemNotifierService.mainSystemDoorkeeperApplicationToken = "test_token";
     }
 
     @Test
     public void testNotifyExternalSystemSuccess() {
+        when(environment.getActiveProfiles()).thenReturn(new String[] { "prod" });
         PressureNotification notification = new PressureNotification(
                 "unique123",
                 25.0,
                 AlertLevel.HIGH,
                 AlertType.HIGH_PRESSURE,
                 false,
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
 
         ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.OK);
         when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class)))
@@ -57,33 +61,36 @@ public class ExternalSystemNotifierServiceTest{
         externalSystemNotifierService.notifyExternalSystem(notification);
 
         ArgumentCaptor<HttpEntity> requestCaptor = ArgumentCaptor.forClass(HttpEntity.class);
-        verify(restTemplate, times(1)).exchange(anyString(), any(HttpMethod.class), requestCaptor.capture(), eq(String.class));
+        verify(restTemplate, times(1)).exchange(anyString(), any(HttpMethod.class), requestCaptor.capture(),
+                eq(String.class));
 
         HttpEntity<PressureNotification> request = requestCaptor.getValue();
         assertNotNull(request);
         assertEquals(notification, request.getBody());
 
         HttpHeaders headers = request.getHeaders();
-        assertEquals("Bearer " + externalSystemNotifierService.mainSystemDoorkeeperApplicationToken, headers.getFirst(HttpHeaders.AUTHORIZATION));
+        assertEquals("Bearer " + externalSystemNotifierService.mainSystemDoorkeeperApplicationToken,
+                headers.getFirst(HttpHeaders.AUTHORIZATION));
         assertEquals(MediaType.APPLICATION_JSON_VALUE, headers.getFirst(HttpHeaders.CONTENT_TYPE));
     }
 
     @Test
     public void testNotifyExternalSystemFailure() {
+        when(environment.getActiveProfiles()).thenReturn(new String[] { "prod" });
         PressureNotification notification = new PressureNotification(
                 "unique123",
                 25.0,
                 AlertLevel.HIGH,
                 AlertType.HIGH_PRESSURE,
                 false,
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
 
         when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class)))
                 .thenThrow(new RuntimeException("Failed to notify external system"));
 
         externalSystemNotifierService.notifyExternalSystem(notification);
 
-        verify(restTemplate, times(5)).exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class));
+        verify(restTemplate, times(5)).exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class),
+                eq(String.class));
     }
 }

@@ -45,8 +45,7 @@ public class PressureNotificationServiceTest {
                 AlertLevel.HIGH,
                 AlertType.HIGH_PRESSURE,
                 false,
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
 
         List<PressureNotification> expectedNotifications = Arrays.asList(notification);
         when(pressureNotificationRepository.findByFilters(any(), any(), any(), any(), any(), any()))
@@ -58,8 +57,7 @@ public class PressureNotificationServiceTest {
                 false,
                 "unique123",
                 AlertLevel.HIGH,
-                AlertType.HIGH_PRESSURE
-        );
+                AlertType.HIGH_PRESSURE);
 
         assertEquals(expectedNotifications, actualNotifications);
         verify(pressureNotificationRepository, times(1)).findByFilters(any(), any(), any(), any(), any(), any());
@@ -73,8 +71,7 @@ public class PressureNotificationServiceTest {
                 AlertLevel.HIGH,
                 AlertType.HIGH_PRESSURE,
                 false,
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
         notification.setId(1L);
 
         when(pressureNotificationRepository.findById(1L)).thenReturn(Optional.of(notification));
@@ -107,8 +104,7 @@ public class PressureNotificationServiceTest {
                 AlertLevel.HIGH,
                 AlertType.HIGH_PRESSURE,
                 false,
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
 
         when(pressureNotificationRepository.save(notification)).thenReturn(notification);
 
@@ -127,15 +123,16 @@ public class PressureNotificationServiceTest {
                 AlertLevel.HIGH,
                 AlertType.HIGH_PRESSURE,
                 false,
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
 
         when(pressureNotificationRepository.save(notification)).thenReturn(notification);
-        doThrow(new ErrorSendindNotificationToMainServerException("Failed to notify external system after 5 attempts")).when(externalSystemNotifierService).notifyExternalSystem(notification);
+        doThrow(new ErrorSendindNotificationToMainServerException("Failed to notify external system after 5 attempts"))
+                .when(externalSystemNotifierService).notifyExternalSystem(notification);
 
-        ErrorSendindNotificationToMainServerException exception = assertThrows(ErrorSendindNotificationToMainServerException.class, () -> {
-            pressureNotificationService.save(notification);
-        });
+        ErrorSendindNotificationToMainServerException exception = assertThrows(
+                ErrorSendindNotificationToMainServerException.class, () -> {
+                    pressureNotificationService.save(notification);
+                });
 
         assertEquals("Failed to notify external system after 5 attempts", exception.getMessage());
         verify(pressureNotificationRepository, times(1)).save(notification);
