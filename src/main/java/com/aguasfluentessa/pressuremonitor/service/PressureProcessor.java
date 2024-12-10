@@ -2,13 +2,10 @@ package com.aguasfluentessa.pressuremonitor.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.aguasfluentessa.pressuremonitor.model.PressureNotification;
 import com.aguasfluentessa.pressuremonitor.model.PressureNotificationEnums.AlertLevel;
 import com.aguasfluentessa.pressuremonitor.model.PressureNotificationEnums.AlertType;
-import com.aguasfluentessa.pressuremonitor.repository.PressureNotificationRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,9 +16,12 @@ public class PressureProcessor {
     private static final double MIN_PRESSURE = 15.0;
     private static final double MAX_PRESSURE = 30.0;
     private static final double PRESSURE_VARIATION_THRESHOLD = 5.0;
+    
+    private final PressureNotificationService pressureNotificationService;
 
-    @Autowired
-    private PressureNotificationRepository pressureNotificationRepository;
+    public PressureProcessor(PressureNotificationService pressureNotificationService) {
+        this.pressureNotificationService = pressureNotificationService;
+    }
 
     public void processPressure(List<Double> readings, String gaugeUniqueIdentificator) {
         if (readings == null || readings.isEmpty()) {
@@ -54,7 +54,7 @@ public class PressureProcessor {
                 false,
                 LocalDateTime.now());
 
-        pressureNotificationRepository.save(notification);
+        pressureNotificationService.save(notification);
 
     }
 
@@ -69,7 +69,7 @@ public class PressureProcessor {
                 false,
                 LocalDateTime.now());
 
-        pressureNotificationRepository.save(notification);
+        pressureNotificationService.save(notification);
 
     }
 
