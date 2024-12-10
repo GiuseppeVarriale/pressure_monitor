@@ -1,4 +1,4 @@
-package com.aguasfluentessa.pressuremonitor.Exceptions;
+package com.aguasfluentessa.pressuremonitor.exceptions;
 
 public class PressureGaugeNotFoundException extends RuntimeException {
 
