@@ -82,7 +82,7 @@ public class PressureNotificationControllerTest {
 
     @Test
     public void testSetAcknowledgedValidRequest() throws Exception {
-        mockMvc.perform(post("/api/v1/pressure-notifications/setAcknowledged")
+        mockMvc.perform(post("/api/v1/pressure-notifications/set-acknowledged")
                 .content("{\"notificationId\":1,\"acknowledged\":true}")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
@@ -92,7 +92,7 @@ public class PressureNotificationControllerTest {
 
     @Test
     public void testSetAcknowledgedInvalidRequest() throws Exception {
-        mockMvc.perform(post("/api/v1/pressure-notifications/setAcknowledged")
+        mockMvc.perform(post("/api/v1/pressure-notifications/set-acknowledged")
                 .content("{\"notificationId\":null,\"acknowledged\":true}")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -105,7 +105,7 @@ public class PressureNotificationControllerTest {
     public void testSetAcknowledgedNotFound() throws Exception {
         doThrow(new EntityNotFoundException("Notification not found")).when(pressureNotificationService).setAcknowledged(1L);
 
-        mockMvc.perform(post("/api/v1/pressure-notifications/setAcknowledged")
+        mockMvc.perform(post("/api/v1/pressure-notifications/set-acknowledged")
                 .content("{\"notificationId\":1,\"acknowledged\":true}")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())

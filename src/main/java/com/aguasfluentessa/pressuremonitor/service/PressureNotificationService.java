@@ -4,23 +4,22 @@ import com.aguasfluentessa.pressuremonitor.model.PressureNotification;
 import com.aguasfluentessa.pressuremonitor.model.PressureNotificationEnums.AlertLevel;
 import com.aguasfluentessa.pressuremonitor.model.PressureNotificationEnums.AlertType;
 import com.aguasfluentessa.pressuremonitor.repository.PressureNotificationRepository;
-
 import jakarta.persistence.EntityNotFoundException;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class PressureNotificationService {
 
-    @Autowired
-    private PressureNotificationRepository pressureNotificationRepository;
-
-    @Autowired
-    private ExternalSystemNotifierService externalSystemNotifierService;
+    private final PressureNotificationRepository pressureNotificationRepository;
+    private final ExternalSystemNotifierService externalSystemNotifierService;
+    
+    public PressureNotificationService(PressureNotificationRepository pressureNotificationRepository,
+            ExternalSystemNotifierService externalSystemNotifierService) {
+        this.pressureNotificationRepository = pressureNotificationRepository;
+        this.externalSystemNotifierService = externalSystemNotifierService;
+    }
 
     public List<PressureNotification> findByFilters(LocalDateTime startDate, LocalDateTime endDate,
             Boolean acknowledged,

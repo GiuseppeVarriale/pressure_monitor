@@ -2,20 +2,20 @@ package com.aguasfluentessa.pressuremonitor.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-
-import com.aguasfluentessa.pressuremonitor.Exceptions.DuplicatePressureGaugeException;
-import com.aguasfluentessa.pressuremonitor.Exceptions.PressureGaugeNotFoundException;
+import com.aguasfluentessa.pressuremonitor.exceptions.DuplicatePressureGaugeException;
+import com.aguasfluentessa.pressuremonitor.exceptions.PressureGaugeNotFoundException;
 import com.aguasfluentessa.pressuremonitor.model.PressureGauge;
 import com.aguasfluentessa.pressuremonitor.repository.PressureGaugeRepository;
 
 @Service
 public class PressureGaugeService {
+    private final PressureGaugeRepository pressureGaugeRepository;
 
-    @Autowired
-    private PressureGaugeRepository pressureGaugeRepository;
+    public PressureGaugeService(PressureGaugeRepository pressureGaugeRepository) {
+        this.pressureGaugeRepository = pressureGaugeRepository;
+    }
 
     public List<PressureGauge> findAll() {
         return pressureGaugeRepository.findAll();
@@ -41,10 +41,10 @@ public class PressureGaugeService {
         try {
             return pressureGaugeRepository.save(pressureGauge);
         } catch (DataIntegrityViolationException ex) {
-            throw new DuplicatePressureGaugeException("Pressure Gauge with the same systemId or gaugeUniqueIdentificator already exists");
+            throw new DuplicatePressureGaugeException(
+                    "Pressure Gauge with the same systemId or gaugeUniqueIdentificator already exists");
         }
     }
-    
 
     public List<PressureGauge> findByStatus(Boolean active) {
         return pressureGaugeRepository.findByActive(active);
@@ -73,7 +73,8 @@ public class PressureGaugeService {
         try {
             return pressureGaugeRepository.save(existingGauge);
         } catch (DataIntegrityViolationException ex) {
-            throw new DuplicatePressureGaugeException("Pressure Gauge with the same systemId or gaugeUniqueIdentificator already exists");
+            throw new DuplicatePressureGaugeException(
+                    "Pressure Gauge with the same systemId or gaugeUniqueIdentificator already exists");
         }
     }
 

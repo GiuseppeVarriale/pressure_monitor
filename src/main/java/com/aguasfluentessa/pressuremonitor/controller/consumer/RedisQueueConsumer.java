@@ -1,9 +1,10 @@
-package com.aguasfluentessa.pressuremonitor.service;
+package com.aguasfluentessa.pressuremonitor.controller.consumer;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
+import com.aguasfluentessa.pressuremonitor.service.PressureGaugeReadingService;
+import com.aguasfluentessa.pressuremonitor.service.PressureProcessor;
+import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,18 +19,18 @@ public class RedisQueueConsumer {
     private final RedisTemplate<String, Object> redisTemplate;
     private final PressureProcessor pressureProcessor;
     private final ExecutorService executorService;
+    private final PressureGaugeReadingService pressureGaugeReadingService;
 
-    @Autowired
-    private PressureGaugeReadingService pressureGaugeReadingService;
-
-    @Autowired
     public RedisQueueConsumer(RedisTemplate<String, Object> redisTemplate,
-                              PressureProcessor pressureProcessor) {
+            PressureProcessor pressureProcessor,
+            PressureGaugeReadingService pressureGaugeReadingService) {
         this.redisTemplate = redisTemplate;
         this.pressureProcessor = pressureProcessor;
-        this.executorService = Executors.newFixedThreadPool(10); 
+        this.executorService = Executors.newFixedThreadPool(10);
+        this.pressureGaugeReadingService = pressureGaugeReadingService;
     }
 
+    @PostConstruct
     public void startConsuming() {
         for (int i = 0; i < ((ThreadPoolExecutor) executorService).getCorePoolSize(); i++) {
             executorService.submit(this::consumeQueue);
@@ -39,7 +40,8 @@ public class RedisQueueConsumer {
 
     private void consumeQueue() {
         while (true) {
-            String gaugeUniqueIdentificator = (String) redisTemplate.opsForList().rightPop("pressureReadingsProcessQueue");
+            String gaugeUniqueIdentificator = (String) redisTemplate.opsForList()
+                    .rightPop("pressureReadingsProcessQueue");
             if (gaugeUniqueIdentificator != null) {
                 List<Double> readings = pressureGaugeReadingService.getLastReadings(gaugeUniqueIdentificator);
                 if (readings.size() > 0) {

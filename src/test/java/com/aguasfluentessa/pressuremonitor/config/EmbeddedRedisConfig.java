@@ -16,22 +16,21 @@ import jakarta.annotation.PreDestroy;
 import jakarta.annotation.PostConstruct;
 import redis.embedded.RedisServer;
 
-
 import java.io.IOException;
 
 @Configuration
 @Profile("test")
 public class EmbeddedRedisConfig {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(EmbeddedRedisConfig.class);
     private RedisServer redisServer;
-    
+
     @Value("${spring.data.redis.host}")
     private String redisHost;
-    
+
     @Value("${spring.data.redis.port}")
     private int redisPort;
-    
+
     @PostConstruct
     public void startRedis() throws IOException {
         redisServer = new RedisServer(redisPort);
@@ -47,9 +46,7 @@ public class EmbeddedRedisConfig {
         }
     }
 
-
-
-      @Bean
+    @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         return new LettuceConnectionFactory();
     }
@@ -60,7 +57,7 @@ public class EmbeddedRedisConfig {
         template.setConnectionFactory(redisConnectionFactory());
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-       
+
         return template;
     }
 }

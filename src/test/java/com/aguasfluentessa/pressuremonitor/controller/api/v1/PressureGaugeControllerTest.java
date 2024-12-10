@@ -1,7 +1,7 @@
 package com.aguasfluentessa.pressuremonitor.controller.api.v1;
 
-import com.aguasfluentessa.pressuremonitor.Exceptions.DuplicatePressureGaugeException;
-import com.aguasfluentessa.pressuremonitor.Exceptions.PressureGaugeNotFoundException;
+import com.aguasfluentessa.pressuremonitor.exceptions.DuplicatePressureGaugeException;
+import com.aguasfluentessa.pressuremonitor.exceptions.PressureGaugeNotFoundException;
 import com.aguasfluentessa.pressuremonitor.model.PressureGauge;
 import com.aguasfluentessa.pressuremonitor.service.PressureGaugeService;
 import org.junit.jupiter.api.BeforeEach;

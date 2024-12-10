@@ -1,15 +1,12 @@
 package com.aguasfluentessa.pressuremonitor.service;
 
-import com.aguasfluentessa.pressuremonitor.Exceptions.PressureGaugeNotFoundException;
+import com.aguasfluentessa.pressuremonitor.exceptions.PressureGaugeNotFoundException;
 import com.aguasfluentessa.pressuremonitor.model.PressureGauge;
 import com.aguasfluentessa.pressuremonitor.model.PressureGaugeReading;
 import com.aguasfluentessa.pressuremonitor.repository.PressureGaugeReadingRepository;
 import com.aguasfluentessa.pressuremonitor.repository.PressureGaugeRepository;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,20 +15,18 @@ import java.util.stream.Collectors;
 @Service
 public class PressureGaugeReadingService {
 
-    @Autowired
-    private PressureGaugeReadingRepository pressureGaugeReadingRepository;
+    private final PressureGaugeReadingRepository pressureGaugeReadingRepository;
+    private final PressureGaugeRepository pressureGaugeRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    @Autowired
-    private PressureGaugeRepository pressureGaugeRepository;
-
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
-
-    private PressureGaugeReadingService(RedisTemplate<String, Object> redisTemplate) {
+    private PressureGaugeReadingService(RedisTemplate<String, Object> redisTemplate,
+            PressureGaugeReadingRepository pressureGaugeReadingRepository,
+            PressureGaugeRepository pressureGaugeRepository) {
         this.redisTemplate = redisTemplate;
+        this.pressureGaugeReadingRepository = pressureGaugeReadingRepository;
+        this.pressureGaugeRepository = pressureGaugeRepository;
     }
 
-        
     public List<PressureGaugeReading> findAll() {
         return pressureGaugeReadingRepository.findAll();
     }
@@ -80,7 +75,7 @@ public class PressureGaugeReadingService {
             return new ArrayList<>();
         }
         return objects.stream()
-                      .map(obj -> (Double) obj)
-                      .collect(Collectors.toList());
+                .map(obj -> (Double) obj)
+                .collect(Collectors.toList());
     }
 }

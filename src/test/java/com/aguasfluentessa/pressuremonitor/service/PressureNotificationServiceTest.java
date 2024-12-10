@@ -1,6 +1,6 @@
 package com.aguasfluentessa.pressuremonitor.service;
 
-import com.aguasfluentessa.pressuremonitor.Exceptions.ErrorSendindNotificationToMainServerException;
+import com.aguasfluentessa.pressuremonitor.exceptions.ErrorSendindNotificationToMainServerException;
 import com.aguasfluentessa.pressuremonitor.model.PressureNotification;
 import com.aguasfluentessa.pressuremonitor.model.PressureNotificationEnums.AlertLevel;
 import com.aguasfluentessa.pressuremonitor.model.PressureNotificationEnums.AlertType;

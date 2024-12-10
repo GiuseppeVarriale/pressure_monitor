@@ -156,10 +156,4 @@ public class PressureGauge {
                 + gaugeUniqueIdentificator + ", lat=" + lat + ", lon=" + lon + ", active=" + active + ", createdAt="
                 + createdAt + ", updatedAt=" + updatedAt + "]";
     }
-
-    public static Object builder() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'builder'");
-    }
-
 }

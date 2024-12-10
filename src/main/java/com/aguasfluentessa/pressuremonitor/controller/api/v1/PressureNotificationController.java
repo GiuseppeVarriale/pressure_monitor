@@ -5,7 +5,6 @@ import com.aguasfluentessa.pressuremonitor.model.PressureNotification;
 import com.aguasfluentessa.pressuremonitor.model.PressureNotificationEnums;
 import com.aguasfluentessa.pressuremonitor.service.PressureNotificationService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -17,10 +16,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/pressure-notifications")
 @Validated
-public class PressureNotificationController extends AbstractV1ApiController {
+public class PressureNotificationController {
 
-    @Autowired
-    private PressureNotificationService pressureNotificationService;
+    private final PressureNotificationService pressureNotificationService;
+
+    public PressureNotificationController(PressureNotificationService pressureNotificationService) {
+        this.pressureNotificationService = pressureNotificationService;
+    }
 
     @GetMapping
     public ResponseEntity<List<PressureNotification>> listAllNotifications(
@@ -30,15 +32,15 @@ public class PressureNotificationController extends AbstractV1ApiController {
             @RequestParam(required = false) String gaugeUniqueIdentificator,
             @RequestParam(required = false) PressureNotificationEnums.AlertLevel alertLevel,
             @RequestParam(required = false) PressureNotificationEnums.AlertType alertType) {
-        List<PressureNotification> notifications = pressureNotificationService.findByFilters(startDate, endDate, acknowledged,
+        List<PressureNotification> notifications = pressureNotificationService.findByFilters(startDate, endDate,
+                acknowledged,
                 gaugeUniqueIdentificator, alertLevel, alertType);
         return ResponseEntity.ok(notifications);
     }
 
-
-    
-    @PostMapping("/setAcknowledged")
-    public ResponseEntity<Void> setAcknowledged(@Valid @RequestBody SetPressureNotificationAcknowledgedRequest request) {
+    @PostMapping("/set-acknowledged")
+    public ResponseEntity<Void> setAcknowledged(
+            @Valid @RequestBody SetPressureNotificationAcknowledgedRequest request) {
         pressureNotificationService.setAcknowledged(request.getNotificationId());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
